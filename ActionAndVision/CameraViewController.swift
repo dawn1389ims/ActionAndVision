@@ -8,7 +8,7 @@ The camera view controller manages the video capture pipeline.
 import UIKit
 import AVFoundation
 
-protocol CameraViewControllerOutputDelegate: AnyObject {
+protocol CameraViewControllerOutputDelegate: class {
     func cameraViewController(_ controller: CameraViewController, didReceiveBuffer buffer: CMSampleBuffer, orientation: CGImagePropertyOrientation)
 }
 

@@ -237,7 +237,7 @@ extension SetupViewController: CameraViewControllerOutputDelegate {
         let registrationRequest = VNTranslationalImageRegistrationRequest(targetedCMSampleBuffer: buffer)
         try sceneStabilityRequestHandler.perform([registrationRequest], on: previousBuffer, orientation: orientation)
         self.previousSampleBuffer = buffer
-        if let alignmentObservation = registrationRequest.results?.first {
+        if let alignmentObservation = registrationRequest.results?.first as? VNImageTranslationAlignmentObservation {
             let transform = alignmentObservation.alignmentTransform
             sceneStabilityHistoryPoints.append(CGPoint(x: transform.tx, y: transform.ty))
         }
@@ -276,7 +276,7 @@ extension SetupViewController: CameraViewControllerOutputDelegate {
         contoursRequest.contrastAdjustment = 1.6 // the default contrast is 2.0 but in this case 1.6 gives us more reliable results
         contoursRequest.regionOfInterest = boardBoundingBox.visionRect
         try visionHandler.perform([contoursRequest])
-        if let result = contoursRequest.results?.first {
+        if let result = contoursRequest.results?.first as? VNContoursObservation {
             // Perform analysis of the top level contours in order to find board edge path and hole path.
             guard let subpaths = analyzeBoardContours(result.topLevelContours) else {
                 return
