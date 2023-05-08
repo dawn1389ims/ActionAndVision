@@ -32,6 +32,7 @@ class GameViewController: UIViewController, AVCaptureVideoDataOutputSampleBuffer
     private let detectPlayerRequest = VNDetectHumanBodyPoseRequest()
     private var playerDetected = false
     private var isBagInTargetRegion = false
+    //飞行物体所在区域，位置在player 右侧，宽度400，高度不超过player
     private var throwRegion = CGRect.null
     private var targetRegion = CGRect.null
     private let trajectoryView = TrajectoryView()
@@ -81,7 +82,7 @@ class GameViewController: UIViewController, AVCaptureVideoDataOutputSampleBuffer
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        detectTrajectoryRequest = nil
+//        detectTrajectoryRequest = nil
     }
 
     func getScoreLabelAttributedStringForScore(_ score: Int) -> NSAttributedString {
@@ -96,8 +97,8 @@ class GameViewController: UIViewController, AVCaptureVideoDataOutputSampleBuffer
         playerBoundingBox.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         playerBoundingBox.backgroundOpacity = 0
         playerBoundingBox.isHidden = true
-        view.addSubview(playerBoundingBox)
-        view.addSubview(jointSegmentView)
+//        view.addSubview(playerBoundingBox)
+//        view.addSubview(jointSegmentView)
         view.addSubview(trajectoryView)
         gameStatusLabel.text = "Waiting for player"
         // Set throw type counters
@@ -218,11 +219,11 @@ class GameViewController: UIViewController, AVCaptureVideoDataOutputSampleBuffer
     func processTrajectoryObservations(_ controller: CameraViewController, _ results: [VNTrajectoryObservation]) {
         if self.trajectoryView.inFlight && results.count < 1 {
             // The trajectory is already in flight but VNDetectTrajectoriesRequest doesn't return any trajectory observations.
-            self.noObservationFrameCount += 1
-            if self.noObservationFrameCount > GameConstants.noObservationFrameLimit {
-                // Ending the throw as we don't see any observations in consecutive GameConstants.noObservationFrameLimit frames.
-                self.updatePlayerStats(controller)
-            }
+//            self.noObservationFrameCount += 1
+//            if self.noObservationFrameCount > GameConstants.noObservationFrameLimit {
+//                // Ending the throw as we don't see any observations in consecutive GameConstants.noObservationFrameLimit frames.
+//                self.updatePlayerStats(controller)
+//            }
         } else {
             for path in results where path.confidence > trajectoryDetectionMinConfidence {
                 // VNDetectTrajectoriesRequest has returned some trajectory observations.
@@ -230,17 +231,17 @@ class GameViewController: UIViewController, AVCaptureVideoDataOutputSampleBuffer
                 self.trajectoryView.duration = path.timeRange.duration.seconds
                 self.trajectoryView.points = path.detectedPoints
                 self.trajectoryView.perform(transition: .fadeIn, duration: 0.25)
-                if !self.trajectoryView.fullTrajectory.isEmpty {
-                    // Hide the previous throw metrics once a new throw is detected.
-                    if !self.dashboardView.isHidden {
-                        self.resetKPILabels()
-                    }
-                    self.updateTrajectoryRegions()
-                    if self.trajectoryView.isThrowComplete {
-                        // Update the player statistics once the throw is complete.
-                        self.updatePlayerStats(controller)
-                    }
-                }
+//                if !self.trajectoryView.fullTrajectory.isEmpty {
+//                    // Hide the previous throw metrics once a new throw is detected.
+//                    if !self.dashboardView.isHidden {
+//                        self.resetKPILabels()
+//                    }
+//                    self.updateTrajectoryRegions()
+//                    if self.trajectoryView.isThrowComplete {
+//                        // Update the player statistics once the throw is complete.
+//                        self.updatePlayerStats(controller)
+//                    }
+//                }
                 self.noObservationFrameCount = 0
             }
         }
@@ -361,7 +362,14 @@ extension GameViewController: CameraViewControllerOutputDelegate {
                         if !self.playerDetected && !boxView.isHidden {
                             self.gameStatusLabel.alpha = 0
                             self.resetTrajectoryRegions()
-                            self.gameManager.stateMachine.enter(GameManager.DetectedPlayerState.self)
+//                            self.gameManager.stateMachine.enter(GameManager.DetectedPlayerState.self)
+                            self.gameStatusLabel.alpha = 0
+                            self.resetTrajectoryRegions()
+                            self.playerDetected = true
+                            self.playerStats.reset()
+                            self.resetTrajectoryRegions()
+                            self.trajectoryView.roi = self.throwRegion
+                            self.trajectoryView.resetPath()
                         }
                     }
                 }

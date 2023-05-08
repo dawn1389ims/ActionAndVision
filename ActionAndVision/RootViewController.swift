@@ -87,7 +87,7 @@ extension RootViewController: GameStateChangeObserver {
         switch state {
         case is GameManager.DetectingBoardState:
             controllerToPresent = SetupViewController()
-        case is GameManager.DetectingPlayerState:
+        case is GameManager.TrackThrowsState:
             controllerToPresent = GameViewController()
         case is GameManager.ShowSummaryState:
             controllerToPresent = SummaryViewController()

@@ -22,7 +22,9 @@ class GameManager {
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return validNextStates.contains(where: { stateClass == $0 })
+//            return validNextStates.contains(where: { stateClass == $0 })
+            //zzq
+            return true
         }
         
         override func didEnter(from previousState: GKState?) {

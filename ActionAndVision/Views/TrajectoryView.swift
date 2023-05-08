@@ -9,9 +9,19 @@ import UIKit
 import Vision
 
 class TrajectoryView: UIView, AnimatedTransitioning {
+    /**
+     *region of interest*
+     *which helps the request significantly reduce noise and improve performance
+     */
     var roi = CGRect.null
+    /**
+     是否飞行中
+     轨迹位置超出roi时绘制轨迹
+     计算飞行距离
+     */
     var inFlight = false
     var outOfROIPoints = 0
+    //已绘制轨迹
     var fullTrajectory = UIBezierPath()
     var duration = 0.0
     var speed = 0.0
@@ -29,6 +39,8 @@ class TrajectoryView: UIView, AnimatedTransitioning {
 
     private var distanceWithCurrentTrajectory: CGFloat = 0
     private var isTrajectoryMovingForward: Bool {
+        //zzq
+        return true
         // Check if the trajectory is moving from left to right
         if let firstPoint = points.first, let lastPoint = points.last {
             return lastPoint.location.x > firstPoint.location.x
@@ -112,6 +124,14 @@ class TrajectoryView: UIView, AnimatedTransitioning {
         let flipVertical = CGAffineTransform.verticalFlip
         trajectory.apply(flipVertical)
         trajectory.apply(CGAffineTransform(scaleX: bounds.width, y: bounds.height))
+        //zzq
+//        if ()
+        fullTrajectory.append(trajectory)
+        shadowLayer.path = fullTrajectory.cgPath
+        blurLayer.path = fullTrajectory.cgPath
+        pathLayer.path = fullTrajectory.cgPath
+        
+        return
         let startScaled = startingPoint.location.applying(flipVertical).applying(CGAffineTransform(scaleX: bounds.width, y: bounds.height))
         var distanceWithCurrentTrajectory: CGFloat = 0
         if inFlight {
